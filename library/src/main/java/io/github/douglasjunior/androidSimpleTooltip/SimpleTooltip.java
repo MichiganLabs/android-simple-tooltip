@@ -721,6 +721,17 @@ public class SimpleTooltip implements PopupWindow.OnDismissListener {
         }
 
         /**
+         *
+         * @param contentView
+         * @return
+         */
+        public Builder contentView(View contentView) {
+            this.contentView = contentView;
+            this.textViewId = 0;
+            return this;
+        }
+
+        /**
          * <div class="pt">Define se o tooltip será fechado quando receber um clique dentro de sua área. Padrão é <tt>true</tt>.</div>
          *
          * @param dismissOnInsideTouch <div class="pt"><tt>true</tt> para fechar quando receber o click dentro, <tt>false</tt> caso contrário.</div>
