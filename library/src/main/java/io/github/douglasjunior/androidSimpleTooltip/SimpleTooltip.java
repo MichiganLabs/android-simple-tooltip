@@ -77,7 +77,7 @@ public class SimpleTooltip implements PopupWindow.OnDismissListener {
     private static final int mDefaultArrowColorRes = R.color.simpletooltip_arrow;
     private static final int mDefaultMarginRes = R.dimen.simpletooltip_margin;
     private static final int mDefaultPaddingRes = R.dimen.simpletooltip_padding;
-    private static final int mDefaultAnimationPaddingRes = R.dimen.simpletooltip_animation_padding;
+    private static final int mDefaultAnimationMarginRes = R.dimen.simpletooltip_animation_margin;
     private static final int mDefaultAnimationDurationRes = R.integer.simpletooltip_animation_duration;
     private static final int mDefaultArrowWidthRes = R.dimen.simpletooltip_arrow_width;
     private static final int mDefaultArrowHeightRes = R.dimen.simpletooltip_arrow_height;
@@ -112,7 +112,7 @@ public class SimpleTooltip implements PopupWindow.OnDismissListener {
     private AnimatorSet mAnimator;
     private final float mMargin;
     private final float mPadding;
-    private final float mAnimationPadding;
+    private final float mAnimationMargin;
     private final long mAnimationDuration;
     private final float mArrowWidth;
     private final float mArrowHeight;
@@ -147,7 +147,7 @@ public class SimpleTooltip implements PopupWindow.OnDismissListener {
         mAnimated = builder.animated;
         mMargin = builder.margin;
         mPadding = builder.padding;
-        mAnimationPadding = builder.animationPadding;
+        mAnimationMargin = builder.animationMargin;
         mAnimationDuration = builder.animationDuration;
         mOnDismissListener = builder.onDismissListener;
         mOnShowListener = builder.onShowListener;
@@ -240,20 +240,20 @@ public class SimpleTooltip implements PopupWindow.OnDismissListener {
 
         switch (mGravity) {
             case Gravity.START:
-                location.x = anchorRect.left - mPopupWindow.getContentView().getWidth() - mMargin;
+                location.x = anchorRect.left - mPopupWindow.getContentView().getWidth() + mMargin;
                 location.y = anchorCenter.y - mPopupWindow.getContentView().getHeight() / 2f;
                 break;
             case Gravity.END:
-                location.x = anchorRect.right + mMargin;
+                location.x = anchorRect.right - mMargin;
                 location.y = anchorCenter.y - mPopupWindow.getContentView().getHeight() / 2f;
                 break;
             case Gravity.TOP:
                 location.x = anchorCenter.x - mPopupWindow.getContentView().getWidth() / 2f;
-                location.y = anchorRect.top - mPopupWindow.getContentView().getHeight() - mMargin;
+                location.y = anchorRect.top - mPopupWindow.getContentView().getHeight() + mMargin;
                 break;
             case Gravity.BOTTOM:
                 location.x = anchorCenter.x - mPopupWindow.getContentView().getWidth() / 2f;
-                location.y = anchorRect.bottom + mMargin;
+                location.y = anchorRect.bottom - mMargin;
                 break;
             case Gravity.CENTER:
                 location.x = anchorCenter.x - mPopupWindow.getContentView().getWidth() / 2f;
@@ -281,7 +281,7 @@ public class SimpleTooltip implements PopupWindow.OnDismissListener {
         LinearLayout linearLayout = new LinearLayout(mContext);
         linearLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         linearLayout.setOrientation(mArrowDirection == ArrowDrawable.LEFT || mArrowDirection == ArrowDrawable.RIGHT ? LinearLayout.HORIZONTAL : LinearLayout.VERTICAL);
-        int layoutPadding = (int) (mAnimated ? mAnimationPadding : 0);
+        int layoutPadding = (int) (mAnimated ? mAnimationMargin : mMargin);
         linearLayout.setPadding(layoutPadding, layoutPadding, layoutPadding, layoutPadding);
 
         if (mShowArrow) {
@@ -488,11 +488,11 @@ public class SimpleTooltip implements PopupWindow.OnDismissListener {
     private void startAnimation() {
         final String property = mGravity == Gravity.TOP || mGravity == Gravity.BOTTOM ? "translationY" : "translationX";
 
-        final ObjectAnimator anim1 = ObjectAnimator.ofFloat(mContentLayout, property, -mAnimationPadding, mAnimationPadding);
+        final ObjectAnimator anim1 = ObjectAnimator.ofFloat(mContentLayout, property, -mAnimationMargin, mAnimationMargin);
         anim1.setDuration(mAnimationDuration);
         anim1.setInterpolator(new AccelerateDecelerateInterpolator());
 
-        final ObjectAnimator anim2 = ObjectAnimator.ofFloat(mContentLayout, property, mAnimationPadding, -mAnimationPadding);
+        final ObjectAnimator anim2 = ObjectAnimator.ofFloat(mContentLayout, property, mAnimationMargin, -mAnimationMargin);
         anim2.setDuration(mAnimationDuration);
         anim2.setInterpolator(new AccelerateDecelerateInterpolator());
 
@@ -560,7 +560,7 @@ public class SimpleTooltip implements PopupWindow.OnDismissListener {
         private boolean animated = false;
         private float margin = -1;
         private float padding = -1;
-        private float animationPadding = -1;
+        private float animationMargin = -1;
         private OnDismissListener onDismissListener;
         private OnShowListener onShowListener;
         private long animationDuration;
@@ -609,8 +609,8 @@ public class SimpleTooltip implements PopupWindow.OnDismissListener {
             if (padding < 0) {
                 padding = context.getResources().getDimension(mDefaultPaddingRes);
             }
-            if (animationPadding < 0) {
-                animationPadding = context.getResources().getDimension(mDefaultAnimationPaddingRes);
+            if (animationMargin < 0) {
+                animationMargin = context.getResources().getDimension(mDefaultAnimationMarginRes);
             }
             if (animationDuration == 0) {
                 animationDuration = context.getResources().getInteger(mDefaultAnimationDurationRes);
@@ -870,28 +870,28 @@ public class SimpleTooltip implements PopupWindow.OnDismissListener {
         }
 
         /**
-         * <div class="pt">Define o tamanho do deslocamento durante a animação. Padrão é o valor de <tt>{@link R.dimen.simpletooltip_animation_padding}</tt>.</div>
+         * <div class="pt">Define o tamanho do deslocamento durante a animação. Padrão é o valor de <tt>{@link R.dimen.simpletooltip_animation_margin}</tt>.</div>
          *
-         * @param animationPadding <div class="pt">tamanho do deslocamento em pixels.</div>
+         * @param animationMargin <div class="pt">tamanho do deslocamento em pixels.</div>
          * @return <tt>this</tt>
-         * @see Builder#animationPadding(int)
+         * @see Builder#animationMargin(int)
          */
         @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-        public Builder animationPadding(float animationPadding) {
-            this.animationPadding = animationPadding;
+        public Builder animationMargin(float animationMargin) {
+            this.animationMargin = animationMargin;
             return this;
         }
 
         /**
-         * <div class="pt">Define o tamanho do deslocamento durante a animação. Padrão é <tt>{@link R.dimen.simpletooltip_animation_padding}</tt>.</div>
+         * <div class="pt">Define o tamanho do deslocamento durante a animação. Padrão é <tt>{@link R.dimen.simpletooltip_animation_margin}</tt>.</div>
          *
-         * @param animationPaddingRes <div class="pt">resId do tamanho do deslocamento.</div>
+         * @param animationMarginRes <div class="pt">resId do tamanho do deslocamento.</div>
          * @return <tt>this</tt>
-         * @see Builder#animationPadding(float)
+         * @see Builder#animationMargin(float)
          */
         @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-        public Builder animationPadding(@DimenRes int animationPaddingRes) {
-            this.animationPadding = context.getResources().getDimension(animationPaddingRes);
+        public Builder animationMargin(@DimenRes int animationMarginRes) {
+            this.animationMargin = context.getResources().getDimension(animationMarginRes);
             return this;
         }
 
