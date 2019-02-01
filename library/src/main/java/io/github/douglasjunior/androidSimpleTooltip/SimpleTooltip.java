@@ -392,7 +392,7 @@ public class SimpleTooltip implements PopupWindow.OnDismissListener {
 
             if (mMaxWidth > 0 && mContentView.getWidth() > mMaxWidth) {
                 SimpleTooltipUtils.setWidth(mContentView, mMaxWidth);
-                popup.update(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                popup.update((int) mMaxWidth, -1);
                 return;
             }
 
